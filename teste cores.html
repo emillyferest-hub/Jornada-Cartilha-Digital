@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornada de Liderança - Renault</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Variáveis de Cor Renault */
+        :root {
+            --renault-yellow: #FFD700; /* Amarelo Vibrante */
+            --renault-black: #1a1a1a; /* Preto Quase Total */
+            --renault-white: #ffffff;
+            --renault-yellow-light: #FFFACD;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--renault-white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ----------------------------------------------------------------- */
+        /* TELA INICIAL: Background, Overlay e Texto */
+        /* ----------------------------------------------------------------- */
+        #start-screen {
+            background-image: url('background-lideranca.jpg'); /* Caminho da imagem de fundo */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--renault-white) !important;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+        }
+
+            #start-screen::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7); /* Overlay Preto Escuro */
+                z-index: 0;
+            }
+
+            /* Garante que o conteúdo fique acima do overlay */
+            #start-screen > * {
+                position: relative;
+                z-index: 1;
+            }
+
+            /* Ajustes de cor forçada para o fundo escuro */
+            #start-screen h1, #start-screen p, #start-screen .text-slate-800, #start-screen .text-slate-500 {
+                color: var(--renault-white) !important;
+            }
+
+            /* Cor do container do ícone na tela inicial */
+            #start-screen .bg-sky-100 {
+                background-color: rgba(255, 255, 255, 0.2); /* Fundo sutil */
+            }
+
+            #start-screen .text-sky-600 {
+                color: var(--renault-yellow) !important; /* Ícone Amarelo Renault */
+            }
+
+        .renault-logo {
+            width: 180px;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); /* Sombra para o logo */
+        }
+        /* ----------------------------------------------------------------- */
+
+        /* Tema Principal */
+        .navigation-btn, #start-btn {
+            background-color: var(--renault-yellow) !important;
+            color: var(--renault-black) !important;
+        }
+
+            .navigation-btn:hover, #start-btn:hover {
+                background-color: #E0B400 !important; /* Amarelo um pouco mais escuro no hover */
+            }
+
+        /* Cores de Fundo do Quiz/Resultados */
+        #app-content-wrapper {
+            background-color: var(--renault-white) !important;
+            color: var(--renault-black);
+        }
+
+        /* Opções Selecionadas - Amarelo Renault */
+        .quiz-option.selected, .scenario-option.selected {
+            border-color: var(--renault-yellow);
+            background-color: var(--renault-yellow-light);
+            color: var(--renault-black);
+            box-shadow: 0 4px 6px -1px rgba(255, 215, 0, 0.2), 0 2px 4px -2px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Abas Ativas */
+        .tab-btn.active {
+            border-bottom: 3px solid var(--renault-yellow);
+            color: var(--renault-black);
+            font-weight: 600;
+        }
+
+        /* Elementos da Trilha de Desenvolvimento */
+        .track-step-number {
+            background-color: var(--renault-black) !important;
+            color: var(--renault-white) !important;
+        }
+
+        .track-step.is-active .track-step-number {
+            background-color: var(--renault-yellow) !important;
+            color: var(--renault-black) !important;
+            border: 2px solid var(--renault-black);
+        }
+
+        /* Classes de utilidade (mantidas do tailwind original, mas forçadas se necessário) */
+        .text-black {
+            color: var(--renault-black);
+        }
+
+        .text-yellow-400 {
+            color: var(--renault-yellow);
+        }
+
+
+        /* CLASSES DE ANIMAÇÃO (mantidas) */
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-out-down {
+            animation: fadeOutDown 0.5s ease-in forwards;
+        }
+
+        @keyframes fadeOutDown {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .quiz-option, .scenario-option {
+            transition: all 0.25s ease-in-out;
+            cursor: pointer;
+        }
+
+            .quiz-option:hover, .scenario-option:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.05);
+            }
+
+            .scenario-option.correct {
+                border-color: #22c55e;
+                background-color: #f0fdf4;
+                color: #16a34a;
+            }
+
+            .scenario-option.incorrect {
+                border-color: #f97316;
+                background-color: #fff7ed;
+                color: #ea580c;
+            }
+
+        .feedback-card {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+            .feedback-card.visible {
+                max-height: 500px;
+                opacity: 1;
+                margin-top: 1rem;
+            }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+
+            .accordion-content.open {
+                max-height: 2000px;
+            }
+
+        .main-accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .main-accordion-header:not(.is-locked):hover {
+                background-color: #f1f5f9;
+            }
+
+        .track-step.is-locked .main-accordion-header {
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .renault-logo {
+                width: 120px;
+            }
+
+            #start-screen h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main id="app-container" class="w-full max-w-5xl mx-auto transition-all duration-500" style="background-color: transparent; border: none; box-shadow: none;">
+
+        <section id="start-screen" class="text-center fade-in-up p-4 sm:p-6">
+
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Renault_2021.svg" alt="Logo Renault" class="renault-logo">
+
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3">Plataforma de Desenvolvimento de Líderes</h1>
+            <p class="mb-8 max-w-xl mx-auto">Receba uma análise aprofundada do seu perfil de liderança e descubra caminhos práticos para o seu desenvolvimento.</p>
+
+            <button id="start-btn" class="navigation-btn font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                Iniciar Análise
+            </button>
+
+            <div class="mt-8 flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-8 text-lg text-white">
+                <div class="flex items-center">
+                    <i class="fas fa-chart-line text-yellow-400 text-2xl mr-2"></i>
+                    <span>Visão Estratégica</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-users text-yellow-400 text-2xl mr-2"></i>
+                    <span>Liderança de Equipes</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-star text-yellow-400 text-2xl mr-2"></i>
+                    <span>Crescimento Profissional</span>
+                </div>
+            </div>
+
+        </section>
+
+        <div id="app-content-wrapper" class="hidden w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 sm:p-10">
+
+            <section id="quiz-screen" class="hidden">
+                <div id="quiz-container"></div>
+            </section>
+
+            <section id="results-screen" class="hidden">
+                <div id="results-container" class="fade-in-up">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold text-black tracking-tight">Sua Trilha de Desenvolvimento</h2>
+                        <p class="text-slate-500 mt-2">Siga as etapas para explorar sua análise e colocar o aprendizado em prática.</p>
+                    </div>
+
+                    <div id="user-track" class="relative space-y-4">
+                        <div class="absolute left-9 top-9 h-full w-0.5 bg-slate-200" style="z-index: 0;"></div>
+
+                        <div class="track-step relative" data-step="1">
+                            <div class="main-accordion-header flex items-center text-left p-4 sm:p-6 bg-white rounded-lg shadow-sm">
+                                <div class="track-step-number z-10 flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center font-bold text-xl mr-4">1</div>
+                                <span class="font-bold text-xl text-black flex-1">Seu Diagnóstico Completo</span>
+                                <div class="track-step-status">
+                                    <svg class="w-6 h-6 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                            <div class="accordion-content pl-8">
+                                <div class="p-6 pt-2 space-y-8">
+                                    <div id="diagnosis-module"></div>
+                                    <div id="playbook-module"></div>
+                                    <div class="text-right">
+                                        <button class="next-step-btn navigation-btn font-bold py-2 px-6 rounded-full cursor-pointer transition-transform transform hover:scale-105" data-next-step="2">Concluir Etapa 1</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="track-step relative" data-step="2">
+                            <div class="main-accordion-header flex items-center text-left p-4 sm:p-6 bg-white rounded-lg shadow-sm">
+                                <div class="track-step-number z-10 flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center font-bold text-xl mr-4">2</div>
+                                <span class="font-bold text-xl text-black flex-1">Ferramentas de Ação</span>
+                                <div class="track-step-status">
+                                    <svg class="w-6 h-6 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                            <div class="accordion-content pl-8">
+                                <div class="p-6 pt-2">
+                                    <p class="text-slate-500 text-center mb-8">Agora, vamos colocar a teoria em prática com simulações e planejamentos.</p>
+                                    <div class="grid lg:grid-cols-1 xl:grid-cols-2 gap-8">
+                                        <div id="scenario-module" class="bg-white p-6 rounded-xl border shadow-sm"></div>
+                                        <div id="integration-plan-module" class="bg-white p-6 rounded-xl border shadow-sm"></div>
+                                    </div>
+                                    <div class="text-right mt-8">
+                                        <button class="next-step-btn navigation-btn font-bold py-2 px-6 rounded-full cursor-pointer transition-transform transform hover:scale-105" data-next-step="3">Concluir Etapa 2</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="track-step relative" data-step="3">
+                            <div class="main-accordion-header flex items-center text-left p-4 sm:p-6 bg-white rounded-lg shadow-sm">
+                                <div class="track-step-number z-10 flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center font-bold text-xl mr-4">3</div>
+                                <span class="font-bold text-xl text-black flex-1">Biblioteca de Suporte</span>
+                                <div class="track-step-status">
+                                    <svg class="w-6 h-6 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                            <div class="accordion-content pl-8">
+                                <div class="p-6 pt-2 space-y-8">
+                                    <div id="deep-dive-module"></div>
+                                    <div class="grid lg:grid-cols-2 gap-8">
+                                        <div id="case-studies-module"></div>
+                                        <div id="toolkit-module"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-12">
+                        <button id="restart-btn" class="navigation-btn secondary-btn font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                            Refazer Análise
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // --- BANCO DE DADOS (CONTEÚDO) ---
+        const DB = {
+            quiz: {
+                step1: [
+                    { text: "O prazo de um projeto importante está se esgotando e a equipe está visivelmente sobrecarregada.", options: [{ text: "Minha prioridade é reestruturar o plano de ação. Convoco uma reunião rápida para revisar o progresso, realocar tarefas e garantir que a entrega aconteça a qualquer custo.", value: "a" }, { text: "Minha prioridade é o bem-estar da equipe. Chamo o time para uma conversa aberta para entender os pontos de estresse, oferecer apoio e ajustar a carga de trabalho de forma realista.", value: "b" }] },
+                    { text: "Você acaba de ser designado para liderar um novo projeto de alta visibilidade na empresa.", options: [{ text: "Meu primeiro passo é criar um plano de projeto detalhado, com metas, métricas (KPIs) e prazos bem definidos, para que todos saibam exatamente o que se espera deles.", value: "a" }, { text: "Meu primeiro passo é reunir a equipe para apresentar o propósito do projeto, garantir que todos se sintam conectados à visão e construir um ambiente de colaboração e confiança.", value: "b" }] },
+                    { text: "Um membro da equipe comete um erro que impacta o cliente.", options: [{ text: "Minha reação imediata é focar no processo: analiso onde a falha ocorreu, implemento uma correção para evitar que se repita e comunico a solução ao cliente.", value: "a" }, { text: "Minha reação imediata é focar na pessoa: converso em particular com o membro da equipe para entender o que aconteceu, oferecer suporte e transformar o erro em uma oportunidade de aprendizado.", value: "b" }] },
+                    { text: "No final do trimestre, você precisa apresentar seus resultados para a diretoria.", options: [{ text: "O destaque da minha apresentação são os números: metas atingidas, eficiência operacional e o retorno sobre o investimento (ROI) que a equipe gerou.", value: "a" }, { text: "O destaque da minha apresentação é o desenvolvimento da equipe: o crescimento das competências individuais, o alto nível de engajamento e a cultura positiva que construímos.", value: "b" }] },
+                    { text: "É hora da avaliação de desempenho semestral de um membro da sua equipe.", options: [{ text: "O foco da conversa é a performance objetiva. Analisamos os resultados alcançados em comparação com as metas estabelecidas e definimos os próximos objetivos de desempenho.", value: "a" }, { text: "O foco da conversa é o desenvolvimento de carreira. Discutimos suas aspirações, pontos fortes e áreas para crescimento, criando um plano de desenvolvimento para o futuro.", value: "b" }] }
+                ],
+                step2: {
+                    path1: [ // Foco em Tarefas
+                        { text: "Um novo procedimento de segurança obrigatório precisa ser implementado imediatamente.", options: [{ text: "Eu mesmo defino as regras, comunico claramente o que precisa ser feito e supervisiono de perto para garantir que todos sigam as novas diretrizes à risca.", value: "a" }, { text: "Eu estabeleço um sistema claro de recompensas para quem adotar o novo procedimento rapidamente e defino consequências para o não cumprimento, garantindo a adesão através de incentivos.", value: "b" }] },
+                        { text: "A produtividade da equipe caiu inesperadamente nas últimas duas semanas.", options: [{ text: "Minha abordagem é intervir diretamente, questionar o motivo da queda no ritmo e deixar claro que o desempenho precisa voltar ao nível esperado.", value: "a" }, { text: "Minha abordagem é revisar as metas e os incentivos. Analiso se as recompensas ainda são motivadoras e se as metas de curto prazo são claras o suficiente para todos.", value: "b" }] },
+                        { text: "Surge uma crise que exige uma decisão em menos de uma hora.", options: [{ text: "Eu assumo o controle, analiso os fatos rapidamente e tomo a decisão final sozinho. A equipe precisa de direção, não de um debate.", value: "a" }, { text: "Eu foco no resultado esperado. Escolho a opção que melhor se alinha com as metas predefinidas e que oferece a recompensa mais clara (ou minimiza a perda) para a organização.", value: "b" }] },
+                        { text: "Você está estruturando uma nova equipe para um projeto de rotina.", options: [{ text: "A estrutura ideal é uma hierarquia clara, onde eu defino as tarefas e todos sabem exatamente a quem se reportar.", value: "a" }, { text: "A estrutura ideal é baseada em desempenho, onde as responsabilidades são claras e cada um é recompensado com base em sua contribuição individual para os objetivos.", value: "b" }] },
+                        { text: "Um funcionário está com dificuldades para atingir suas metas mensais.", options: [{ text: "A solução é aumentar a supervisão, fornecer instruções mais detalhadas e monitorar seu trabalho mais de perto.", value: "a" }, { text: "A solução é criar um plano de melhoria de desempenho com metas claras e consequências diretas, sejam elas um bônus por atingir a meta ou uma advertência por não atingi-la.", value: "b" }] }
+                    ],
+                    path2: [ // Equilibrado
+                        { text: "Sua empresa precisa desenvolver um produto completamente novo para um mercado desconhecido.", options: [{ text: "Minha abordagem é reunir a equipe para uma série de workshops colaborativos, onde a melhor ideia será construída e escolhida em conjunto.", value: "a" }, { text: "Minha abordagem é pintar um quadro inspirador de como esse produto pode revolucionar o mercado e motivar a equipe a pensar grande e a inovar para alcançar essa visão.", value: "b" }] },
+                        { text: "Em uma reunião semanal de alinhamento, qual é o seu principal objetivo?", options: [{ text: "Garantir que todos tenham a chance de contribuir, que as informações sejam compartilhadas de forma transparente e que as próximas ações sejam decididas em consenso.", value: "a" }, { text: "Elevar a conversa, conectando as tarefas da semana à missão de longo prazo da empresa e inspirando a equipe a ver o impacto de seu trabalho.", value: "b" }] },
+                        { text: "A equipe acaba de concluir um projeto desafiador com resultados excepcionais.", options: [{ text: "Eu organizo uma celebração para todos e faço questão de reconhecer publicamente a contribuição específica de cada membro para o sucesso do grupo.", value: "a" }, { text: "Eu uso esse sucesso como um trampolim, celebrando a conquista e, ao mesmo tempo, desafiando a equipe a pensar em como podemos superar esse resultado no próximo projeto.", value: "b" }] },
+                        { text: "A empresa está passando por uma grande mudança cultural.", options: [{ text: "Acredito que a melhor forma de garantir a adesão é envolver todos no processo, criando comitês e abrindo canais para que as pessoas ajudem a moldar a nova cultura.", value: "a" }, { text: "Acredito que a mudança só acontece quando há uma visão forte e convincente. Meu papel é comunicar essa visão de forma apaixonada para que as pessoas se sintam inspiradas a mudar.", value: "b" }] },
+                        { text: "Ao planejar as metas para o próximo ano, sua prioridade é:", options: [{ text: "Desenvolver as metas em conjunto com a equipe, para garantir que sejam realistas, compreendidas e que todos se sintam responsáveis por elas.", value: "a" }, { text: "Estabelecer metas audaciosas que tirem a equipe da zona de conforto e a inspirem a alcançar um novo patamar de excelência e inovação.", value: "b" }] }
+                    ],
+                    path3: [ // Foco em Pessoas
+                        { text: "Um membro da equipe, que é um especialista técnico, parece desmotivado e seu rendimento caiu.", options: [{ text: "Minha prioridade é entender suas necessidades como pessoa. Marco uma conversa para ouvir suas preocupações e descobrir como posso, como líder, servi-lo melhor para que ele se sinta realizado.", value: "a" }, { text: "Meu foco é o seu potencial. Inicio uma série de conversas de coaching para ajudá-lo a identificar seus próprios obstáculos e a traçar um plano para reacender sua paixão e desenvolver novas habilidades.", value: "b" }, { text: "Confio na sua maturidade. Dou-lhe espaço para resolver seus próprios problemas, deixando claro que estou disponível para fornecer recursos ou suporte se ele me procurar.", value: "c" }] },
+                        { text: "Qual frase melhor descreve sua filosofia de gestão?", options: [{ text: "'Meu sucesso como líder é medido pelo sucesso e bem-estar da minha equipe. Meu trabalho é remover barreiras para que eles possam brilhar.'", value: "a" }, { text: "'Meu trabalho é ser um catalisador de crescimento, ajudando cada pessoa a desbloquear seu potencial máximo através de orientação e feedback.'", value: "b" }, { text: "'Contrate pessoas brilhantes e saia do caminho delas. A autonomia é a chave para a excelência.'", value: "c" }] },
+                        { text: "Você precisa delegar uma tarefa importante e complexa.", options: [{ text: "Eu a vejo como uma oportunidade de empoderamento. Deleto a tarefa para a pessoa que mais se beneficiará com o desafio em termos de crescimento e confiança.", value: "a" }, { text: "Eu a vejo como uma oportunidade de desenvolvimento. Deleto a tarefa e estabeleço check-ins regulares para orientar a pessoa, fazendo perguntas que a ajudem a encontrar as melhores soluções por conta própria.", value: "b" }, { text: "Eu simplesmente entrego a tarefa ao membro mais qualificado da equipe, confio em sua capacidade de entregar um resultado excelente e me coloco à disposição para dúvidas pontuais.", value: "c" }] },
+                        { text: "Dois membros da equipe estão em um conflito que está afetando o clima do time.", options: [{ text: "Eu intervenho como mediador, focando em ouvir os dois lados com empatia e em ajudar a restaurar a harmonia e o relacionamento entre eles.", value: "a" }, { text: "Eu facilito uma conversa entre os dois, usando perguntas para ajudá-los a entender a perspectiva um do outro e a construir uma solução juntos.", value: "b" }, { text: "Eu espero que eles, como profissionais, resolvam o conflito por conta própria. Só intervenho se o trabalho começar a ser prejudicado de forma crítica.", value: "c" }] },
+                        { text: "Você se sente mais realizado como líder quando:", options: [{ text: "Vê os membros da sua equipe felizes, colaborando e crescendo não apenas como profissionais, mas como pessoas.", value: "a" }, { text: "Um membro da equipe que você orientou alcança uma grande promoção ou resolve um problema que antes parecia impossível para ele.", value: "b" }, { text: "Sua equipe de especialistas entrega um trabalho inovador e de alta qualidade, exigindo o mínimo de sua supervisão.", value: "c" }] }
+                    ]
+                }
+            },
+            styles: {
+                "Autocrático": { orientation: "Foco em Tarefas", analysis: "Você é um líder decisivo que valoriza a estrutura, o controle e a eficiência. Sua abordagem de comando e controle pode ser extremamente eficaz em crises ou com equipes que precisam de direção clara. No entanto, corre o risco de desmotivar a equipe e suprimir a inovação.", development: "Pratique a Liderança Situacional. Comece delegando decisões de baixo risco a membros confiáveis da equipe para construir a confiança mútua. Faça um esforço consciente para solicitar a opinião da equipe em decisões não urgentes, mesmo que a decisão final ainda seja sua." },
+                "Transacional": { orientation: "Foco em Tarefas", analysis: "Você é um líder pragmático que se destaca em criar sistemas claros de metas e recompensas. Sua abordagem é excelente para alcançar objetivos de curto prazo. O desafio é que a motivação que você gera é extrínseca e pode não criar um engajamento profundo e duradouro.", development: "Incorpore elementos da Liderança Transformacional. Ao definir metas, vá além do 'o quê' e explique o 'porquê'. Conecte as tarefas diárias à missão maior da empresa para infundir um senso de propósito que transcenda a próxima recompensa." },
+                "Democrático": { orientation: "Equilibrado", analysis: "Você é um líder colaborativo que valoriza a participação e o consenso, criando um ambiente de trabalho positivo e engajado. Sua força está em construir equipes coesas. Sua fraqueza pode ser a lentidão na tomada de decisão, especialmente sob pressão.", development: "Aumente sua agilidade de decisão. Para questões de menor impacto, defina um tempo limite para o debate. Aprenda a reconhecer situações que exigem uma decisão mais diretiva e comunique claramente à equipe por que uma abordagem mais rápida é necessária naquele contexto." },
+                "Transformacional": { orientation: "Equilibrado", analysis: "Você é um líder inspirador que motiva a equipe com uma visão convincente do futuro. Sua capacidade de inspirar e impulsionar a mudança é sua maior força. O risco é que sua paixão por inovação constante possa levar a equipe ao esgotamento.", development: "Equilibre a visão com a execução. Integre práticas da Liderança Transacional para criar clareza nos passos incrementais necessários para alcançar sua grande visão. Celebre pequenas vitórias ao longo do caminho para manter a energia e evitar que a equipe se sinta sobrecarregada." },
+                "Servidor": { orientation: "Foco em Pessoas", analysis: "Você é um líder empático cujo foco principal é o bem-estar e o crescimento de sua equipe. Você constrói confiança e lealdade profundas. O desafio é equilibrar o serviço com a necessidade de tomar decisões difíceis e manter a responsabilidade por resultados.", development: "Incorpore a responsabilização. Ser um líder servidor não significa evitar conversas difíceis. Aprenda a definir expectativas claras de desempenho e a abordá-las de uma maneira que seja ao mesmo tempo solidária e firme, enquadrando o feedback como um serviço ao crescimento do indivíduo." },
+                "Coaching": { orientation: "Foco em Pessoas", analysis: "Você é um líder focado no desenvolvimento que se destaca em extrair o melhor de cada indivíduo. Sua capacidade de ensinar e orientar é um ativo poderoso para o crescimento do talento. Sua abordagem pode, no entanto, ser demorada e menos eficaz quando é necessária uma ação imediata.", development: "Pratique a Liderança Situacional. Reconheça que nem todos os momentos são para coaching. Em situações de crise ou com tarefas simples, uma instrução direta (Estilo de Direção) é mais eficaz e apropriada. Aprenda a alternar entre 'ensinar a pescar' e 'dar o peixe'." },
+                "Liberal": { orientation: "Foco em Pessoas", analysis: "Você é um líder que confia em sua equipe, oferecendo máxima autonomia. Quando funciona, libera um potencial incrível de criatividade e propriedade. O risco é enorme, pois a falta de direção pode levar ao caos se a equipe não for excepcionalmente madura e automotivada.", development: "Crie 'grades de proteção'. Mesmo com autonomia, as equipes se beneficiam de clareza sobre a visão geral, os limites e os resultados esperados. Estabeleça esses parâmetros de alto nível e, em seguida, dê liberdade à equipe para operar dentro deles. Agende check-ins regulares para oferecer suporte, em vez de esperar ser solicitado." }
+            },
+            playbook: {
+                "Autocrático": { "Baby Boomer": { synergy: "Respeito mútuo pela hierarquia e processos estabelecidos.", friction: "Podem sentir que sua vasta experiência está sendo subutilizada se as decisões forem sempre de cima para baixo.", advice: "Crie um 'conselho de seniores' para consultar em decisões importantes. Demonstre que a experiência deles é um ativo estratégico para você." }, "Geração X": { synergy: "Foco compartilhado em resultados e eficiência.", friction: "Eles detestam microgerenciamento. Seu controle excessivo pode entrar em conflito direto com a autonomia que eles exigem.", advice: "Seja claro sobre as metas, mas dê a eles total autonomia sobre o processo. Foque a conversa em 'entrega de valor', não em 'horas trabalhadas'." }, "Millennial": { synergy: "Sua direção clara pode ajudar a focar a energia criativa deles.", friction: "A falta de propósito e colaboração pode ser fatal. Eles se desconectam se não sentirem que fazem parte da decisão.", advice: "Antes de comunicar uma decisão, conecte-a ao propósito da empresa. Crie espaços para que eles contribuam com ideias, mesmo que a decisão final seja sua." }, "Geração Z": { synergy: "Sua clareza pode oferecer a estrutura que eles precisam em meio à sobrecarga de informação.", friction: "Seu estilo pode ser percebido como autoritário e inflexível, sufocando a autonomia e a criatividade que eles valorizam.", advice: "Dê metas claras, mas permita que eles escolham *como* chegar lá. Use canais rápidos (chat) para feedback e explique o 'porquê' das decisões para gerar engajamento." } },
+                "Transacional": { "Baby Boomer": { synergy: "A clareza de metas e recompensas é bem recebida por uma geração que valoriza a estabilidade.", friction: "Se as recompensas forem apenas financeiras, você pode perder a chance de engajá-los através do reconhecimento de sua lealdade e experiência.", advice: "Combine as recompensas financeiras com reconhecimento público, como prêmios por tempo de serviço ou oportunidades de mentoria." }, "Geração X": { synergy: "A abordagem 'se você entregar, você ganha' se alinha perfeitamente com sua independência e foco em resultados.", friction: "Se o sistema for muito rígido, pode limitar a criatividade deles para encontrar soluções mais eficientes.", advice: "Defina o 'o quê' (a meta) e a recompensa, mas dê a eles total liberdade no 'como'. A autonomia é a maior recompensa para eles." }, "Millennial": { synergy: "Metas claras de curto prazo podem ajudar a satisfazer sua necessidade de progresso e reconhecimento constantes.", friction: "Se não houver um propósito maior conectado à transação, eles podem se sentir como mercenários e buscar um trabalho com mais significado.", advice: "Sempre conecte a meta transacional à missão da empresa. Mostre como alcançar aquele bônus também ajuda a empresa a alcançar um objetivo maior." }, "Geração Z": { synergy: "A gamificação, com recompensas rápidas e claras por tarefas concluídas, pode ser extremamente eficaz.", friction: "Eles podem otimizar o sistema para ganhar a recompensa, mesmo que isso signifique sacrificar a qualidade ou o aprendizado.", advice: "Crie um sistema de recompensas que inclua não apenas a entrega, mas também a inovação e o desenvolvimento de novas habilidades." } },
+                "Democrático": { "Baby Boomer": { synergy: "Eles se sentirão valorizados ao poderem compartilhar sua vasta experiência no processo de decisão.", friction: "Podem esperar que você tome a decisão final após ouvir a todos, e podem se frustrar com um consenso demorado.", advice: "Modere as discussões garantindo que a experiência deles seja ouvida e, ao final, sintetize as contribuições e anuncie a decisão, mostrando como a colaboração influenciou." }, "Geração X": { synergy: "Eles apreciam ser consultados e ter sua opinião valorizada, sem perder a autonomia.", friction: "Muitas reuniões e discussões podem ser vistas como perda de tempo e burocracia desnecessária.", advice: "Otimize a colaboração: use ferramentas assíncronas (documentos compartilhados, etc.) para coletar opiniões e reserve as reuniões apenas para a decisão final." }, "Millennial": { synergy: "Match perfeito! Seu estilo colaborativo e inclusivo é exatamente o que eles procuram em um líder.", friction: "A falta de uma direção clara em meio a tantas opiniões pode gerar ansiedade e falta de foco.", advice: "Comece as discussões com um propósito claro e critérios de decisão bem definidos. Seja o guardião do objetivo para que a colaboração não se perca." }, "Geração Z": { synergy: "Seu estilo se encaixa perfeitamente com o desejo deles de co-criar e ter voz.", friction: "O processo de decisão pode ser lento demais para a agilidade que eles esperam.", advice: "Use ferramentas ágeis (enquetes, brainstorming digital) para coletar opiniões rapidamente. Garanta que, após a colaboração, uma decisão clara e rápida seja tomada." } },
+                "Transformacional": { "Baby Boomer": { synergy: "Sua visão pode dar um novo significado e propósito à vasta experiência que eles possuem.", friction: "Podem ser céticos com visões muito 'grandiosas' se não virem um plano prático e realista por trás.", advice: "Traduza a visão em um plano estratégico com fases e metas claras. Mostre como a experiência deles é a base fundamental para tornar a visão uma realidade." }, "Geração X": { synergy: "Eles se engajam com líderes que são apaixonados e competentes.", friction: "Eles podem se cansar do 'discurso' se não virem resultados práticos e benefícios claros (inclusive para o equilíbrio de vida).", advice: "Conecte a visão a resultados tangíveis e eficientes. Mostre como a inovação proposta vai, na prática, otimizar o trabalho e melhorar a vida de todos." }, "Millennial": { synergy: "Combinação perfeita. Eles procuram um coach, um mentor e um propósito, e seu estilo oferece tudo isso.", friction: "O risco é o 'burnout'. A paixão pela visão pode levar a uma cultura de excesso de trabalho.", advice: "Seja um exemplo de equilíbrio entre vida pessoal e profissional. Conecte o desenvolvimento pessoal deles à visão da empresa, mostrando que o crescimento deles é parte do sucesso." }, "Geração Z": { synergy: "Sua liderança inspiradora e focada em propósito é um ímã para esta geração.", friction: "A grande visão pode parecer distante da tarefa diária. Eles precisam ver o impacto do seu trabalho agora.", advice: "Quebre a grande visão em missões menores e de curto prazo. Mostre como a tarefa de hoje contribui diretamente para o propósito maior. Celebre as pequenas vitórias." } },
+                "Servidor": { "Baby Boomer": { synergy: "Eles se sentem respeitados e cuidados, o que gera alta lealdade.", friction: "Podem interpretar uma abordagem muito focada em 'sentimentos' como falta de foco nos resultados.", advice: "Demonstre que seu serviço à equipe inclui a remoção de obstáculos práticos que os impedem de alcançar os resultados. Conecte o bem-estar à produtividade." }, "Geração X": { synergy: "Seu foco em remover barreiras e apoiar a autonomia é tudo o que eles querem.", friction: "Podem se sentir desconfortáveis com uma proximidade excessiva. Eles valorizam o apoio, mas também o espaço.", advice: "Ofereça suporte de forma proativa, mas não invasiva. Um 'estou aqui se precisar' muitas vezes é mais eficaz do que check-ins constantes." }, "Millennial": { synergy: "Seu estilo cria o ambiente de segurança psicológica que eles precisam para prosperar.", friction: "Podem ter dificuldade em receber feedback corretivo de um líder que é visto como 'amigo'.", advice: "Enquadre o feedback como um ato de serviço ao desenvolvimento deles. Mostre que, para que eles cresçam, você precisa ser honesto sobre os pontos a melhorar." }, "Geração Z": { synergy: "Eles se sentem seguros e apoiados, especialmente em relação à saúde mental, um tema crucial para eles.", friction: "Podem esperar que você resolva todos os seus problemas, diminuindo sua resiliência.", advice: "Sirva-os não dando as respostas, mas ajudando-os a encontrar suas próprias soluções. Ofereça apoio emocional, mas incentive a autonomia na resolução de problemas." } },
+                "Coaching": { "Baby Boomer": { synergy: "Eles apreciam a oportunidade de compartilhar sua sabedoria e de ver seu conhecimento sendo valorizado.", friction: "Podem resistir a serem 'treinados' em áreas onde já se consideram especialistas.", advice: "Adote uma abordagem de 'aprendizado mútuo'. Faça perguntas sobre a experiência deles e posicione-se como alguém que pode ajudá-los a aplicar esse conhecimento em novos contextos." }, "Geração X": { synergy: "A abordagem focada em desenvolvimento de competências é bem recebida, pois os ajuda a se manterem relevantes no mercado.", friction: "Eles preferem um coaching prático e direto ao ponto. Sessões longas e filosóficas podem ser vistas como perda de tempo.", advice: "Foque as sessões de coaching em desafios e oportunidades reais do trabalho. Use perguntas como: 'Qual é o maior obstáculo para você entregar X?'." }, "Millennial": { synergy: "Este é o estilo que eles mais desejam. Um líder que investe tempo em seu desenvolvimento é um fator chave de retenção.", friction: "Eles podem se tornar dependentes do seu feedback para cada passo, diminuindo sua capacidade de tomar decisões sozinhos.", advice: "Use o coaching para construir autoconfiança. Em vez de validar suas ideias, pergunte: 'Qual opção você acredita que é a melhor e por quê?'." }, "Geração Z": { synergy: "Eles são ávidos por aprendizado e veem o coaching como a forma mais rápida de crescer.", friction: "Eles esperam que o coaching seja rápido, contínuo e integrado ao dia a dia, não apenas em sessões formais.", advice: "Use o chat para dar 'micro-coaching'. Envie links, faça perguntas rápidas sobre uma tarefa e dê feedback instantâneo para acelerar o ciclo de aprendizado." } },
+                "Liberal": { "Baby Boomer": { synergy: "Eles têm a experiência e a disciplina para trabalhar com autonomia.", friction: "Podem interpretar a falta de direção como falta de liderança ou de interesse no trabalho deles.", advice: "Faça check-ins estruturados e demonstre interesse genuíno pelo trabalho deles. Peça conselhos e mostre que a experiência deles é crucial, mesmo à distância." }, "Geração X": { synergy: "É o par perfeito. Eles são independentes, focados em tarefas e odeiam microgerenciamento.", friction: "O risco é o isolamento. Se a comunicação for pouca, cada um pode remar para um lado diferente, sem sinergia.", advice: "Garanta que os objetivos estratégicos estejam extremamente claros para todos. Promova encontros periódicos de alinhamento, mas mantenha a autonomia na execução." }, "Millennial": { synergy: "Eles valorizam a flexibilidade e a confiança que seu estilo oferece.", friction: "A falta de mentoria e feedback pode ser vista como negligência. Eles precisam de um coach, não de um chefe ausente.", advice: "Seja proativo! Agende 1-on-1s focados em desenvolvimento de carreira. Ofereça-se para ser um mentor e conecte o trabalho deles a oportunidades de crescimento." }, "Geração Z": { synergy: "Eles amam a autonomia para explorar novas ferramentas e métodos.", friction: "A falta de direção e feedback constante pode deixá-los perdidos, ansiosos e inseguros sobre seu desenvolvimento.", advice: "Combine autonomia com check-ins diários e rápidos (daily scrums). Ofereça mentoria proativamente e estabeleça marcos claros e de curto prazo para os projetos." } }
+            },
+            advancedQuiz: {
+                "Autocrático": [
+                    { title: "Cenário Geração Z: Um membro da Geração Z na sua equipa questiona publicamente o 'porquê' de uma diretiva que você deu, afirmando que parece ineficiente. Qual a sua reação?", options: [{ text: "Respondo que a decisão já foi tomada e que o foco dele deve ser na execução, não no questionamento.", value: "a" }, { text: "Explico brevemente a lógica estratégica por trás da diretiva, mas reafirmo que a execução imediata é a prioridade.", value: "b" }, { text: "Abro a questão para uma breve discussão em equipa para garantir que todos entendam, antes de prosseguir.", value: "c" }, { text: "Agradeço a pergunta e marco uma reunião individual com ele para discutir as suas preocupações mais tarde.", value: "d" }], correct: "b", feedback: { b: "Esta é a melhor adaptação para um líder autocrático. Ele mantém o controlo e a urgência, mas oferece uma breve justificação. Isto reconhece a necessidade de transparência da Geração Z sem ceder a autoridade.", a: "Esta é a resposta autocrática pura e a mais provável de desmotivar um membro da Geração Z.", c: "Esta abordagem é democrática, não autocrática. Abrir para discussão em equipa mina a base do estilo de comando e controlo.", d: "Adiar a conversa pode ser visto como evasivo e não aborda a necessidade de transparência no momento." } },
+                    { title: "Cenário Millennial: A sua equipa de Millennials propõe um novo fluxo de trabalho colaborativo que mudaria a forma como os relatórios são feitos. Como você responde?", options: [{ text: "Rejeito a proposta, explicando que o sistema atual é comprovado e eficiente.", value: "a" }, { text: "Permito que eles testem a nova abordagem num projeto-piloto de baixo risco.", value: "b" }, { text: "Adoto a ideia imediatamente e parabenizo a equipa pela iniciativa.", value: "c" }, { text: "Analiso a proposta sozinho e implemento apenas as partes que não alteram a estrutura de controlo e aprovação.", value: "d" }], correct: "d", feedback: { d: "Esta resposta permite que o líder autocrático mantenha o controlo total enquanto parece incorporar o feedback. Ele dá a ilusão de participação, o que pode mitigar parte da frustração dos Millennials.", a: "Rejeitar completamente a proposta ignora o desejo de inovação e colaboração dos Millennials.", b: "Permitir um piloto é uma abordagem mais flexível, mas ainda cede controlo, o que é atípico para um líder puramente autocrático.", c: "Adotar a ideia imediatamente é uma resposta democrática ou liberal, o oposto do estilo autocrático." } },
+                    { title: "Cenário Geração X: Um especialista da Geração X na sua equipa pede mais autonomia para gerir os seus próprios projetos e horários. Qual a sua abordagem?", options: [{ text: "Nego o pedido, explicando que a padronização é crucial para a supervisão.", value: "a" }, { text: "Concedo a autonomia, mas exijo relatórios de progresso diários e detalhados.", value: "b" }, { text: "Concordo plenamente, afirmando que confio na sua capacidade de autogestão.", value: "c" }, { text: "Ofereço um pouco mais de flexibilidade no 'como', mas mantenho o controlo sobre os prazos.", value: "d" }], correct: "b", feedback: { b: "Esta opção representa a concessão de um líder autocrático. Ele cede na autonomia, mas impõe uma condição de controlo apertado que satisfaz a sua necessidade de supervisão.", a: "Negar o pedido ignora a principal motivação da Geração X (autonomia), arriscando a perda de um talento valioso.", c: "Esta é uma resposta de liderança liberal (Laissez-Faire), que se baseia na confiança total.", d: "Oferecer 'um pouco' de flexibilidade pode ser visto como insuficiente por um profissional da Geração X." } },
+                    { title: "Cenário Baby Boomer: Ocorre uma crise inesperada que exige uma decisão rápida e clara. Como você age?", options: [{ text: "Convoco uma reunião de emergência para debater as opções com os membros mais seniores.", value: "a" }, { text: "Tomo uma decisão imediata e unilateral, e depois comunico as ordens de forma clara e direta.", value: "b" }, { text: "Delego a responsabilidade de gerir a crise ao Baby Boomer mais experiente.", value: "c" }, { text: "Envio um e-mail a todos a pedir sugestões sobre como proceder.", value: "d" }], correct: "b", feedback: { b: "Este é o cenário ideal para a liderança autocrática. Em tempos de crise, a decisão rápida e a direção clara são valorizadas, e os Baby Boomers são a geração mais propensa a aceitar e executar ordens diretas.", a: "Debater em crise é uma abordagem democrática e pode ser demasiado lenta.", c: "Delegar a responsabilidade total é uma abordagem liberal, que pode ser arriscada em momentos de crise.", d: "Pedir sugestões por e-mail é ineficiente e demonstra indecisão." } }
+                ],
+                "Transacional": [
+                    { title: "Cenário Geração Z: Um membro da Geração Z pergunta como o seu trabalho, focado em atingir metas de vendas, contribui para o impacto social positivo da empresa. Como você responde?", options: [{ text: "Explico que o impacto social é uma função do marketing e que o foco dele deve ser o bónus.", value: "a" }, { text: "Conecto as metas de vendas ao crescimento da empresa, que por sua vez financia as iniciativas de impacto social.", value: "b" }, { text: "Ofereço um bónus adicional se ele participar como voluntário num projeto social.", value: "c" }, { text: "Sugiro que ele se concentre no desenvolvimento de competências para ganhos futuros.", value: "d" }], correct: "b", feedback: { b: "Esta abordagem adapta o modelo transacional. Ela enquadra a meta num contexto de propósito, que é um motivador chave para a Geração Z.", a: "Esta resposta desvaloriza a necessidade de propósito da Geração Z e pode ser percebida como cínica.", c: "Transformar o propósito numa outra transação pode parecer inautêntico e minar o valor intrínseco da ação.", d: "Focar apenas no ganho financeiro a longo prazo ignora a necessidade imediata de conexão com um propósito maior." } },
+                    { title: "Cenário Millennial: A sua equipa de Millennials está desmotivada, apesar de atingir as metas. Eles expressam um desejo por mais 'desenvolvimento'. Como você reage?", options: [{ text: "Implemento um novo nível de bónus para quem superar as metas em 20%.", value: "a" }, { text: "Crio um sistema onde, ao atingir metas, os membros desbloqueiam o acesso a cursos e workshops.", value: "b" }, { text: "Organizo um happy hour pago pela empresa para celebrar os resultados.", value: "c" }, { text: "Digo-lhes que o desenvolvimento é uma responsabilidade pessoal.", value: "d" }], correct: "b", feedback: { b: "Esta é uma evolução sofisticada da liderança transacional. Ela usa a estrutura de 'recompensa por desempenho', mas a recompensa é o desenvolvimento que os Millennials tanto valorizam.", a: "Aumentar o bónus é a resposta transacional clássica, mas ignora a raiz do problema, que é a falta de motivação intrínseca.", c: "Um evento social é uma solução temporária e não aborda a necessidade fundamental de crescimento profissional.", d: "Esta resposta é desdenhosa e ignora que, para os Millennials, o desenvolvimento é uma parte esperada da relação de trabalho." } },
+                    { title: "Cenário Geração X: Um membro da Geração X diz que o que mais o motivaria não é um bónus, mas mais flexibilidade. Como você usa a sua abordagem transacional?", options: [{ text: "Explico que a política de bónus é a mesma para todos.", value: "a" }, { text: "Proponho um acordo: se ele atingir 110% da meta, ganha uma semana extra de férias ou sextas-feiras remotas.", value: "b" }, { text: "Ofereço-lhe a flexibilidade, esperando que ele mantenha o seu alto desempenho por gratidão.", value: "c" }, { text: "Sugiro que ele use o seu bónus para tirar licenças não remuneradas.", value: "d" }], correct: "b", feedback: { b: "Esta é a aplicação perfeita da lógica transacional a um motivador não financeiro. O líder identifica o que o funcionário valoriza e transforma-o numa recompensa clara e condicional.", a: "Esta resposta rígida demonstra uma incapacidade de adaptar o sistema de recompensas, arriscando a perda de um talento de topo.", c: "Oferecer a recompensa sem uma condição clara abandona o princípio da 'transação'.", d: "Esta sugestão é insensível e coloca o ónus no funcionário." } },
+                    { title: "Cenário Baby Boomer: Para motivar um gestor Baby Boomer a liderar um projeto de reestruturação, qual a melhor recompensa a oferecer?", options: [{ text: "Um bónus financeiro substancial.", value: "a" }, { text: "Um novo título de 'Diretor de Projetos Estratégicos' e reconhecimento público.", value: "b" }, { text: "Mais autonomia e menos supervisão.", value: "c" }, { text: "A oportunidade de tirar um período sabático de três meses.", value: "d" }], correct: "b", feedback: { b: "Os Baby Boomers são frequentemente motivados por reconhecimento público e estatuto que validam a sua experiência. Um novo título é uma recompensa transacional poderosa que se alinha com os valores desta geração.", a: "Um bónus isolado pode não ser o motivador mais forte para um Baby Boomer em final de carreira.", c: "Mais autonomia é um motivador mais forte para a Geração X.", d: "Um período sabático apela mais ao desejo de equilíbrio dos Millennials ou da Geração X." } }
+                ],
+                "Democrático": [
+                    { title: "Cenário Geração Z: A sua equipa precisa de decidir sobre uma nova ferramenta digital. O membro da Geração Z está frustrado com o longo debate e quer uma decisão rápida. Como você gere a situação?", options: [{ text: "Digo-lhe para ser paciente e explico que o processo democrático é mais importante que a velocidade.", value: "a" }, { text: "Acelero o processo: estabeleço um prazo de 24 horas para a discussão e agendo uma votação final.", value: "b" }, { text: "Dada a sua experiência, delego a decisão final a ele.", value: "c" }, { text: "Tomo a decisão sozinho para acelerar o processo.", value: "d" }], correct: "b", feedback: { b: "Esta abordagem mantém o espírito democrático (discussão e votação), mas adapta-o à necessidade de agilidade da Geração Z, evitando a paralisia da análise.", a: "Esta resposta desvaloriza a agilidade e a intuição digital da Geração Z, podendo ser vista como antiquada.", c: "Delegar a decisão a uma pessoa é uma abordagem liberal, não democrática.", d: "Tomar a decisão sozinho é uma abordagem autocrática." } },
+                    { title: "Cenário Millennial: A sua equipa de Millennials chegou a um consenso rápido sobre uma nova estratégia. No entanto, você percebe que eles ignoraram alguns riscos. O que você faz?", options: [{ text: "Aceito a decisão do grupo, pois confio no consenso da equipa.", value: "a" }, { text: "Veto a decisão e apresento a minha própria estratégia.", value: "b" }, { text: "Desempenho o papel de 'advogado do diabo': elogio a colaboração, mas faço perguntas desafiadoras sobre os riscos.", value: "c" }, { text: "Peço a cada membro que escreva anonimamente as suas preocupações.", value: "d" }], correct: "c", feedback: { c: "Um líder democrático eficaz não é passivo; ele guia a equipa para uma decisão de alta qualidade. Esta abordagem respeita o processo colaborativo, mas enriquece-o ao introduzir o pensamento crítico.", a: "Confiar cegamente no consenso pode levar a más decisões. O papel do líder é garantir a qualidade.", b: "Vetar a decisão é uma ação autocrática e minaria a confiança de uma equipa Millennial.", d: "A abordagem anónima pode ser menos eficaz do que um debate aberto e guiado." } },
+                    { title: "Cenário Geração X: Durante uma reunião, um membro pragmático da Geração X parece frustrado e diz: 'Não podemos simplesmente tomar uma decisão e avançar?'. Como você reage?", options: [{ text: "Peço-lhe que respeite o processo e a opinião de todos.", value: "a" }, { text: "Concordo e encerro a discussão, pedindo uma votação imediata.", value: "b" }, { text: "Valido a sua preocupação. Proponho que se definam os próximos passos em 15 minutos e que os pontos pendentes sejam discutidos offline.", value: "c" }, { text: "Ignoro o comentário e continuo a facilitar a discussão.", value: "d" }], correct: "c", feedback: { c: "Esta resposta mostra inteligência emocional. O líder valida a necessidade de eficiência da Geração X e adapta o processo para ser mais pragmático, mantendo o espírito participativo.", a: "Esta resposta pode ser vista como uma repreensão e desvaloriza a preocupação legítima com a eficiência.", b: "Uma votação imediata pode ser prematura e levar a uma decisão mal pensada.", d: "Ignorar o feedback de um membro da equipa é o oposto de uma abordagem democrática." } },
+                    { title: "Cenário Baby Boomer: Numa decisão de equipa, um Baby Boomer experiente tem uma opinião forte que vai contra o consenso do resto da equipa. Como você gere esta situação?", options: [{ text: "Sigo o consenso da maioria, explicando que a decisão do grupo é soberana.", value: "a" }, { text: "Dou um 'voto de qualidade' à opinião do Baby Boomer, anulando a decisão da maioria.", value: "b" }, { text: "Pauso a decisão e peço ao Baby Boomer que apresente um caso mais detalhado sobre os riscos que ele prevê.", value: "c" }, { text: "Proponho uma solução de compromisso que tenta agradar a ambos os lados.", value: "d" }], correct: "c", feedback: { c: "Esta é a abordagem democrática mais inteligente. O líder usa a experiência do Baby Boomer como um recurso para enriquecer o processo, respeitando tanto o indivíduo como o processo coletivo.", a: "Ignorar a voz da experiência pode levar a equipa a cometer erros evitáveis.", b: "Anular a maioria é uma decisão autocrática.", d: "Uma solução de compromisso fraca pode ser pior do que uma decisão clara." } }
+                ],
+                "Transformacional": [
+                    { title: "Cenário Geração Z: Você apresentou uma visão de longo prazo. Um membro da Geração Z pergunta: 'Ok, mas o que eu posso fazer no meu computador hoje para ajudar nisso?'. Como você responde?", options: [{ text: "Digo-lhe para não se preocupar com os detalhes e manter o foco na visão.", value: "a" }, { text: "Desafio-o a criar o seu próprio plano de ação para o dia.", value: "b" }, { text: "Conecto a visão a uma tarefa imediata e tangível: 'Hoje, você pode pesquisar as três principais tecnologias emergentes que podem apoiar esta visão.'", value: "c" }, { text: "Explico que a estratégia ainda está a ser definida e que ele deve continuar com as suas tarefas atuais.", value: "d" }], correct: "c", feedback: { c: "A Geração Z é pragmática e precisa de ver a conexão entre a grande visão e as tarefas imediatas. Esta resposta fornece essa ponte de forma clara, fazendo-o sentir-se parte da visão desde o primeiro dia.", a: "Esta resposta soa vaga e pode fazer com que a visão pareça irrealista para um membro da Geração Z.", b: "Pode ser avassalador para um funcionário júnior, que procura orientação sobre como contribuir.", d: "Esta resposta adia o engajamento e pode diminuir a inspiração inicial." } },
+                    { title: "Cenário Millennial: A sua equipa de Millennials está totalmente empenhada na sua visão, mas você nota sinais de exaustão. O que você faz?", options: [{ text: "Elogio a sua dedicação e inspiro-os com a próxima fase ainda mais ambiciosa.", value: "a" }, { text: "Ignoro os sinais, confiando que eles sabem gerir a sua própria energia.", value: "b" }, { text: "Introduzo uma 'semana de consolidação' obrigatória, onde o foco é em otimizar o que já foi construído, e celebro os marcos alcançados.", value: "c" }, { text: "Ofereço bónus financeiros a todos como recompensa pelo trabalho árduo.", value: "d" }], correct: "c", feedback: { c: "Um líder transformacional eficaz deve equilibrar a inspiração com o bem-estar. Esta abordagem reconhece o risco de burnout e age proativamente, mostrando que valoriza tanto as pessoas como a visão.", a: "Esta ação ignora o bem-estar da equipa e pode acelerar o burnout.", b: "Ignorar os sinais de esgotamento é uma falha de liderança. Os Millennials esperam que os seus líderes se preocupem com o seu bem-estar.", d: "Bónus são uma ferramenta transacional e não resolvem o problema fundamental do esgotamento." } },
+                    { title: "Cenário Geração X: Um membro cético da Geração X diz: 'A sua visão é inspiradora, mas pouco realista. Qual é o plano de negócios concreto por trás disto?'. Como você reage?", options: [{ text: "Digo-lhe que ele precisa de ter mais fé na visão.", value: "a" }, { text: "Apresento um plano de negócios detalhado com KPIs, marcos trimestrais e uma análise de risco.", value: "b" }, { text: "Peço-lhe que lidere a criação do plano de negócios, transformando o seu ceticismo em contribuição.", value: "c" }, { text: "Reafirmo a visão com ainda mais paixão.", value: "d" }], correct: "b", feedback: { b: "A Geração X é pragmática. Para que eles adiram a uma visão, precisam de ver que ela está ancorada na realidade. Apresentar um plano concreto mostra respeito pela sua mentalidade e prova que o líder é um estratega.", a: "Esta resposta desvaloriza a perspetiva pragmática da Geração X e pode ser vista como arrogante.", c: "Pode ser percebida como uma forma de o líder evitar responder a uma pergunta difícil.", d: "Tentar superar o ceticismo com mais paixão, sem factos, provavelmente aumentará a desconfiança." } },
+                    { title: "Cenário Baby Boomer: Um Baby Boomer experiente expressa preocupação de que a sua visão de 'transformação radical' desvaloriza décadas de trabalho. Como você aborda esta preocupação?", options: [{ text: "Explico que o futuro exige que se abandone o passado.", value: "a" }, { text: "Garanto-lhe que a sua experiência é valiosa, mas que a nova direção não é negociável.", value: "b" }, { text: "Enquadro a transformação como a 'próxima evolução' que só é possível graças à base sólida que ele construiu e peço-lhe que atue como um conselheiro.", value: "c" }, { text: "Crio um projeto especial para ele, para o manter ocupado e separado da iniciativa de transformação.", value: "d" }], correct: "c", feedback: { c: "Esta abordagem honra o legado e a contribuição do Baby Boomer. Ao posicionar a mudança como uma evolução que depende do seu trabalho e ao dar-lhe um papel de destaque, o líder transforma um resistente num aliado.", a: "Esta resposta é desrespeitosa e alienaria qualquer funcionário leal.", b: "Garanto-lhe que a sua experiência é valiosa, mas que a nova direção não é negociável.", c: "Enquadro a transformação como a 'próxima evolução' que só é possível graças à base sólida que ele construiu e peço-lhe que atue como um conselheiro.", d: "Crio um projeto especial para ele, para o manter ocupado e separado da iniciativa de transformação." } }
+                ],
+                "Servidor": [
+                    { title: "Cenário Geração Z: Um recém-formado na sua equipa precisa de um plano proativo para o seu crescimento. Qual a sua abordagem como líder servidor?", options: [{ text: "Digo-lhe que estou aqui para o apoiar em qualquer tarefa.", value: "a" }, { text: "Sento-me com ele para mapear as suas aspirações e, em conjunto, criamos um plano de desenvolvimento com metas de aprendizagem.", value: "b" }, { text: "Dou-lhe acesso a todos os recursos de formação da empresa e digo-lhe para explorar.", value: "c" }, { text: "Pergunto-lhe o que o faria feliz no trabalho e foco-me em tornar o seu dia a dia mais agradável.", value: "d" }], correct: "b", feedback: { b: "A liderança servidora, aplicada à Geração Z, deve ser proativa e focada no desenvolvimento. Esta opção demonstra um serviço profundo ao futuro do funcionário, não apenas ao seu conforto presente.", a: "Esta abordagem é passiva. A Geração Z precisa de uma orientação estruturada, não apenas de um apoio reativo.", c: "Isto é delegação, não serviço. Simplesmente apontar para os recursos não é guiar ativamente.", d: "Perguntar o que o faria feliz pode negligenciar o desenvolvimento a longo prazo." } },
+                    { title: "Cenário Millennial: Um Millennial talentoso está a ter um desempenho abaixo do esperado e precisa de feedback corretivo. Como você aborda a conversa?", options: [{ text: "Evito a conversa para não prejudicar o nosso bom relacionamento.", value: "a" }, { text: "Dou o feedback de forma muito suave, focando apenas nos pontos positivos.", value: "b" }, { text: "Abordo a conversa enquadrando-a como um ato de serviço ao seu crescimento: 'Quero investir no seu sucesso, e para isso, precisamos de falar...'", value: "c" }, { text: "Peço a um colega para lhe dar o feedback, para manter a minha posição de apoio.", value: "d" }], correct: "c", feedback: { c: "Esta é a forma como um líder servidor lida com a responsabilização. O feedback difícil é enquadrado como um ato de cuidado e investimento no indivíduo, o que ressoa com os Millennials.", a: "Evitar o conflito é uma das principais armadilhas da liderança servidora.", b: "Feedback excessivamente suave é ineficaz e não serve ao crescimento do funcionário.", d: "Abdicar da responsabilidade de dar feedback é uma falha de liderança." } },
+                    { title: "Cenário Geração X: Um membro da Geração X diz-lhe: 'A melhor maneira de me servir é deixar-me em paz para fazer o meu trabalho'. Como você responde?", options: [{ text: "Insisto em check-ins diários para garantir que ele tem tudo o que precisa.", value: "a" }, { text: "Respeito o seu pedido e afasto-me completamente.", value: "b" }, { text: "Concordo e redefino o meu papel de serviço: 'Entendido. O meu trabalho será proteger o seu tempo e remover obstáculos. Considere-me o seu `guarda-costas` organizacional.'", value: "c" }, { text: "Peço-lhe que me ensine como ele trabalha.", value: "d" }], correct: "c", feedback: { c: "Esta é uma aplicação magistral da liderança servidora. O líder ouve a necessidade do funcionário e adapta a sua forma de servir, servindo através da proteção e da remoção de barreiras.", a: "Isto seria percebido como microgestão, a coisa que a Geração X mais detesta.", b: "Respeitar o pedido é liderança liberal. Um líder servidor permanece engajado, mas de forma adaptada.", d: "Pedir que ele ensine desvia o foco do serviço ao funcionário." } },
+                    { title: "Cenário Baby Boomer: Um Baby Boomer está a ter dificuldades com uma nova tecnologia e a atrasar a equipa. Como um líder servidor pode ajudá-lo?", options: [{ text: "Digo à equipa para ter paciência com ele.", value: "a" }, { text: "Retiro-o do projeto para aliviar a sua pressão.", value: "b" }, { text: "Organizo uma sessão de formação privada e individual com ele, num ambiente seguro, validando a sua frustração e o seu valor.", value: "c" }, { text: "Peço a um membro mais novo da equipa para se sentar ao lado dele e ensiná-lo.", value: "d" }], correct: "c", feedback: { c: "Esta abordagem serve às necessidades emocionais e práticas. A formação privada respeita a sua dignidade. A validação dos seus sentimentos e do seu valor mostra empatia, que é a marca de um líder servidor.", a: "Dizer para a equipe ter paciência não resolve o problema técnico e é paternalista.", b: "Retirá-lo do projeto pode minar sua confiança e confirmar seus medos de obsolescência.", d: "Esta abordagem informal pode aumentar sua sensação de vergonha e pressão." } }
+                ],
+                "Coaching": [
+                    { title: "Cenário Geração Z: Um estagiário da Geração Z pergunta-lhe como executar uma tarefa básica, como formatar um relatório. Qual a sua abordagem?", options: [{ text: "Pergunto-lhe: 'Quais você acha que seriam os passos para formatar este relatório?'.", value: "a" }, { text: "Dou-lhe a resposta diretamente: 'Use a fonte Arial 10, margens de 2cm e o nosso template padrão...'", value: "b" }, { text: "Sento-me com ele e guio-o passo a passo enquanto ele faz a formatação.", value: "c" }, { text: "Envio-lhe um link para o manual de estilo da empresa.", value: "d" }], correct: "b", feedback: { b: "Este cenário expõe a limitação do estilo de coaching. Para uma tarefa simples e processual, a abordagem mais eficaz é dar uma instrução direta e clara. Um bom líder sabe quando não usar o seu estilo dominante.", a: "Usar uma pergunta de coaching aqui é inadequado e pode fazer o estagiário sentir-se tolo.", c: "Embora seja útil, é mais demorado do que o necessário.", d: "Embora promova a autossuficiência, pode ser menos eficiente do que uma resposta direta." } },
+                    { title: "Cenário Millennial: Uma Millennial está a liderar um projeto pela primeira vez e está a enfrentar dificuldades. Como você a 'coacheia'?", options: [{ text: "Digo-lhe exatamente como eu priorizaria as tarefas.", value: "a" }, { text: "Reorganizo o plano do projeto para ela.", value: "b" }, { text: "Faço-lhe uma série de perguntas: 'Qual é o resultado mais crítico? Que tarefas têm o maior risco se forem atrasadas?'.", value: "c" }, { text: "Assumo a liderança do projeto temporariamente.", value: "d" }], correct: "c", feedback: { c: "Este é o cenário perfeito para o coaching. As perguntas orientadoras capacitam-na a encontrar a sua própria solução, desenvolvendo a sua competência de liderança, o que é altamente valorizado pelos Millennials.", a: "Dar a solução resolve o problema a curto prazo, mas não desenvolve a capacidade da funcionária.", b: "Isto é microgestão e retira a oportunidade de aprendizagem.", d: "Assumir o controlo mina a sua autoridade e confiança." } },
+                    { title: "Cenário Geração X: Um engenheiro sénior da Geração X está a ter dificuldades em comunicar as suas ideias complexas. Como você o 'coacheia'?", options: [{ text: "Digo-lhe para simplificar a sua linguagem.", value: "a" }, { text: "Ofereço-me para fazer a apresentação por ele.", value: "b" }, { text: "Pergunto-lhe: 'Se você estivesse a explicar isto a um cliente, que analogias usaria?'.", value: "c" }, { text: "Organizo uma formação obrigatória de comunicação para a equipa.", value: "d" }], correct: "c", feedback: { c: "As perguntas ajudam-no a mudar de perspetiva e a encontrar a sua própria maneira de comunicar eficazmente, respeitando a sua inteligência e autonomia.", a: "Esta é uma instrução, não coaching. É um 'o quê' sem o 'como'.", b: "Oferecer-se para fazer o trabalho por ele impede o desenvolvimento de competências.", d: "Uma formação geral pode não ser tão eficaz como um coaching individualizado." } },
+                    { title: "Cenário Baby Boomer: Um gestor Baby Boomer, habituado a um estilo diretivo, está a ter dificuldades em reter os talentos mais jovens. Como você o 'coacheia'?", options: [{ text: "Digo-lhe que o seu estilo de gestão está desatualizado.", value: "a" }, { text: "Envio-lhe artigos sobre como gerir Millennials.", value: "b" }, { text: "Numa conversa, pergunto-lhe: 'Quais foram os melhores líderes que você teve? O que eles faziam que o inspirava? Como poderíamos adaptar isso para hoje?'.", value: "c" }, { text: "Implemento uma nova política de gestão de pessoas.", value: "d" }], correct: "c", feedback: { c: "Esta abordagem de coaching é respeitosa. Começa por valorizar a experiência do gestor e usa perguntas para o guiar a refletir e a encontrar as suas próprias soluções.", a: "Uma crítica direta provavelmente irá colocá-lo na defensiva.", b: "Enviar artigos é uma abordagem passiva e impessoal. O coaching requer diálogo.", d: "Uma política de cima para baixo é uma solução transacional ou autocrática." } }
+                ],
+                "Liberal": [
+                    { title: "Cenário Geração Z: Você deu a um recém-contratado da Geração Z um projeto e total autonomia. Duas semanas depois, ele parece perdido. O que você faz?", options: [{ text: "Digo-lhe que ele precisa de ser mais proativo.", value: "a" }, { text: "Assumo o controlo do projeto e dou-lhe tarefas pequenas.", value: "b" }, { text: "Mantenho a autonomia, mas estabeleço 'guard-rails': defino os resultados chave, agendo check-ins semanais e conecto-o a um mentor.", value: "c" }, { text: "Substituo-o no projeto por alguém mais experiente.", value: "d" }], correct: "c", feedback: { c: "A liderança liberal pura falhou. Esta resposta adapta a abordagem: mantém o espírito de autonomia, mas adiciona a estrutura e o apoio de que um membro da Geração Z precisa para ter sucesso.", a: "Isto é culpar o funcionário por uma falha do sistema de liderança.", b: "Mudar para um estilo autocrático não desenvolve a capacidade de autogestão do funcionário.", d: "Substituir o funcionário é a pior opção, minando a confiança da equipe." } },
+                    { title: "Cenário Millennial: A sua equipa de Millennials, com total autonomia, está num impasse devido a um conflito de opiniões. Como você intervém?", options: [{ text: "Deixo que eles resolvam sozinhos.", value: "a" }, { text: "Intervenho temporariamente como um facilitador: organizo uma reunião para os ajudar a decidir, e depois retiro-me novamente.", value: "b" }, { text: "Tomo uma decisão final pelo grupo para acabar com o impasse.", value: "c" }, { text: "Reorganizo a equipa, separando as pessoas em conflito.", value: "d" }], correct: "b", feedback: { b: "Um líder liberal eficaz sabe quando fazer intervenções cirúrgicas. Ao atuar como facilitador temporário, o líder serve à equipa, resolvendo o bloqueio sem retirar a sua autonomia a longo prazo.", a: "A inação é prejudicial. Autonomia não significa abandono.", c: "Esta é uma intervenção autocrática que mina a confiança.", d: "Reorganizar a equipa é uma solução drástica que não resolve a causa do conflito." } },
+                    { title: "Cenário Geração X: A direção pede-lhe um relatório detalhado sobre o progresso semanal da sua equipa de especialistas da Geração X. O que você faz?", options: [{ text: "Começo a exigir relatórios semanais detalhados, explicando que é uma ordem da direção.", value: "a" }, { text: "Crio eu mesmo os relatórios, tentando adivinhar o progresso para não incomodar a equipa.", value: "b" }, { text: "Tenho uma conversa transparente com a equipa e, em conjunto, criamos um sistema de reporte minimalista que satisfaça a direção.", value: "c" }, { text: "Digo à direção que a minha equipa não trabalha com relatórios.", value: "d" }], correct: "c", feedback: { c: "Esta abordagem respeita a autonomia da equipa. Em vez de impor uma nova burocracia, o líder torna-os parte da solução, protegendo a sua cultura de trabalho.", a: "Impor uma nova regra de cima para baixo vai contra a cultura de autonomia da Geração X.", b: "Isto não é sustentável e arrisca-se a fornecer informações imprecisas.", d: "Desafiar diretamente a direção pode ser arriscado e não é uma solução colaborativa." } },
+                    { title: "Cenário Baby Boomer: Um membro sénior, um Baby Boomer, expressa desconforto com a falta de estrutura e direção formal. Como você o apoia?", options: [{ text: "Digo-lhe que este é o nosso estilo de trabalho e que ele precisa de se adaptar à cultura de autonomia.", value: "a" }, { text: "Começo a agendar reuniões de equipa semanais para todos.", value: "b" }, { text: "Proponho-lhe check-ins individuais e opcionais de 15 minutos, duas vezes por semana, sem o impor ao resto da equipa.", value: "c" }, { text: "Sugiro que ele assuma um papel de mentor para os mais novos.", value: "d" }], correct: "c", feedback: { c: "Esta é uma solução personalizada que respeita as necessidades individuais sem perturbar a cultura geral da equipa. O líder liberal adapta-se para fornecer a estrutura que o Baby Boomer valoriza.", a: "Esta resposta é insensível e não reconhece a necessidade legítima de um funcionário valioso.", b: "Mudar a cultura de toda a equipa para acomodar uma pessoa é ineficiente.", d: "Embora seja uma boa ideia, não resolve diretamente a sua necessidade de alinhamento com a liderança." } }
+                ]
+            },
+            generations: {
+                "Baby Boomer": {}, "Geração X": {}, "Millennial": {}, "Geração Z": {}
+            },
+            integrationTips: {
+                "Estrutura e Formalidade": {
+                    "Baby Boomer": "Integração: Natural. Foco: Reforçar o papel de mentor. Par Ideal: Outro Baby Boomer. Ação Chave: Dar-lhe responsabilidades que validem sua experiência imediatamente.",
+                    "Geração X": "Integração: Moderada. Foco: Negociar autonomia dentro da estrutura. Par Ideal: Outro Geração X, se houver. Mentor Secundário: Um Baby Boomer para navegar na política da empresa. Ação Chave: Definir metas claras e deixá-lo trabalhar.",
+                    "Millennial": "Integração: Desafiadora. Foco: Encontrar propósito e oportunidades de crescimento em um ambiente rígido. Par Ideal: Um Geração X para aprender a navegar na burocracia. Mentor Secundário: Um Baby Boomer para mentoria de carreira. Ação Chave: Criar um plano de desenvolvimento claro e conectá-lo às metas da empresa.",
+                    "Geração Z": "Integração: Muito Desafiadora. Foco: Estrutura, mentoria e feedback constante. Par Ideal: Um Baby Boomer designado como mentor formal. Ação Chave: O líder precisa criar um plano de integração superestruturado, com tarefas claras e check-ins diários. A falta de estrutura será sentida como abandono."
+                },
+                "Autonomia e Pragmatismo": {
+                    "Baby Boomer": "Integração: Desafiadora. Foco: Traduzir experiência em resultados, não em processos. Par Ideal: O Millennial da equipe (atua como ponte). Mentoria Reversa: Um membro da Geração X para ensinar eficiência e atalhos. Evitar Par Inicial: Geração X, para não haver choque entre 'processo' e 'apenas faça'.",
+                    "Geração X": "Integração: Natural. Foco: Maximizar a eficiência e a autonomia. Par Ideal: Qualquer membro da Geração X. Ação Chave: Dar-lhe um problema complexo para resolver e sair do caminho.",
+                    "Millennial": "Integração: Suave. Foco: Equilibrar autonomia com feedback e desenvolvimento. Par Ideal: Um Geração X. Ação Chave: Agendar 1-on-1s regulares para garantir alinhamento e oferecer coaching, sem fazer microgestão.",
+                    "Geração Z": "Integração: Desafiadora. Foco: Desenvolver autossuficiência com 'guard-rails'. Par Ideal: O Millennial. Mentor Secundário: Um Geração X para ensinar sobre independência e resolução de problemas. Ação Chave: Dar autonomia em tarefas pequenas e ir aumentando. Fornecer feedback direto e em tempo real, que ambas as gerações apreciam."
+                },
+                "Colaboração e Propósito": {
+                    "Baby Boomer": "Integração: Moderada. Foco: Conectar sua experiência ao propósito da equipe. Par Ideal: O Millennial. Mentoria Reversa: O Millennial para explicar as ferramentas de colaboração. Ação Chave: Enquadrá-lo como um 'conselheiro estratégico' para a equipe.",
+                    "Geração X": "Integração: Suave. Foco: Encontrar um equilíbrio entre colaboração e trabalho individual. Par Ideal: O Millennial, para facilitar a colaboração. Ação Chave: Envolvê-lo em projetos que tenham um resultado claro e tangível, minimizando reuniões desnecessárias.",
+                    "Millennial": "Integração: Natural. Foco: Imersão total na cultura colaborativa. Par Ideal: Qualquer membro Millennial da equipe. Ação Chave: Envolvê-lo imediatamente em projetos de equipe e conectar seu trabalho ao propósito maior da empresa.",
+                    "Geração Z": "Integração: Suave. Foco: Colaboração e desenvolvimento rápido. Par Ideal: O Millennial. Ação Chave: Integrá-lo em uma equipe de projeto com um papel claro. Mostrar-lhe um plano de carreira e oportunidades de aprendizado rápido."
+                },
+                "Digital e Autenticidade": {
+                    "Baby Boomer": "Integração: Muito Desafiadora. Foco: Alfabetização digital e cultural. Par Ideal: O Millennial. Mentoria Reversa: Um membro da Geração Z para ensinar as normas de comunicação digital (Slack, emojis, etc.). Evitar Par Inicial: Geração Z, para não criar frustração com a diferença de ritmo.",
+                    "Geração X": "Integração: Desafiadora. Foco: Adaptar sua comunicação direta ao ambiente digital e transparente. Par Ideal: O Millennial (ponte cultural). Mentoria Reversa: Um membro da Geração Z para mostrar as melhores práticas de ferramentas de comunicação. Ação Chave: Estabelecer canais de comunicação claros (quando usar e-mail vs. chat).",
+                    "Millennial": "Integração: Suave. Foco: Atuar como um líder de pares e mentor. Par Ideal: Um membro da Geração Z. Ação Chave: Dar-lhe a responsabilidade de liderar um pequeno projeto ou iniciativa, guiando os membros mais jovens da equipe.",
+                    "Geração Z": "Integração: Natural. Foco: Autenticidade e impacto. Par Ideal: Qualquer membro da Geração Z. Ação Chave: A integração será fluida. O foco do líder deve ser em comunicar os valores da empresa de forma transparente e garantir um ambiente psicologicamente seguro."
+                }
+            },
+            deepDiveContent: {
+                "Feedback": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>`,
+                    title: "A Arte do Feedback para Cada Geração",
+                    content: `<ul class="list-disc list-inside space-y-2 mt-3"><li><strong>Para Baby Boomers:</strong> Valorizam o feedback formal, estruturado e privado. Foque na experiência e nos resultados de longo prazo. Uma avaliação anual bem-feita pode ter mais impacto do que vários elogios casuais.</li><li><strong>Para Geração X:</strong> Seja direto, honesto e sem rodeios. Eles odeiam 'enrolação'. Um feedback rápido e objetivo por e-mail, focado na tarefa, é muitas vezes mais eficaz do que uma longa reunião.</li><li><strong>Para Millennials:</strong> Buscam feedback constante, como um coach. Use a técnica do "sanduíche" (elogio, ponto a melhorar, elogio) e conecte o feedback ao desenvolvimento de carreira deles. 1-on-1s semanais são ideais.</li><li><strong>Para Geração Z:</strong> O feedback deve ser instantâneo, visual e frequente. Um emoji de reação no chat, um GIF ou um comentário rápido num documento pode ter um grande impacto. Eles vivem em tempo real e esperam que o reconhecimento também seja.</li></ul>`
+                },
+                "Comunicação": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V7a2 2 0 012-2h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V8z" /></svg>`,
+                    title: "Comunicação Multicanal: Falando a Língua de Todos",
+                    content: `<ul class="list-disc list-inside space-y-2 mt-3"><li><strong>E-mail:</strong> Ideal para comunicação formal, documentação e assuntos que exigem registro. É o preferido dos Baby Boomers e Geração X para temas sérios.</li><li><strong>Reuniões (Presenciais ou Vídeo):</strong> Essenciais para decisões complexas, brainstorming e alinhamentos estratégicos. Millennials valorizam a colaboração em tempo real que elas proporcionam.</li><li><strong>Chat (Slack, Teams, etc.):</strong> A melhor ferramenta para perguntas rápidas, alinhamentos do dia a dia e compartilhamento de links. É o habitat natural da Geração Z e cada vez mais dos Millennials. Evite para feedbacks negativos.</li><li><strong>Vídeos Curtos (Loom, etc.):</strong> Uma forma poderosa de explicar uma tarefa complexa de forma assíncrona, muito apreciada pela Geração Z, que é altamente visual. Um vídeo de 2 minutos pode substituir um e-mail de 5 parágrafos.</li></ul>`
+                },
+                "Conflitos": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`,
+                    title: "Gestão de Conflitos Intergeracionais",
+                    content: `<ul class="list-disc list-inside space-y-2 mt-3"><li><strong>Conflito de 'Horário vs. Tarefa':</strong> A Geração X e os Boomers podem valorizar o 'estar presente', enquanto Millennials e Z focam na 'tarefa entregue'. <strong>Solução:</strong> Foque a conversa em metas e resultados. Defina SLAs (prazos de resposta) claros em vez de exigir disponibilidade 24/7.</li><li><strong>Conflito de 'Hierarquia vs. Colaboração':</strong> Gerações mais novas podem questionar decisões de forma que os mais velhos veem como desrespeito. <strong>Solução:</strong> Crie processos formais para sugestões e feedback, como caixas de sugestões digitais ou sessões de brainstorming. Isso estrutura a 'contestação' de forma produtiva.</li><li><strong>Conflito de 'Formalidade vs. Informalidade':</strong> O uso de gírias, emojis ou memes pela Geração Z pode ser visto como falta de profissionalismo. <strong>Solução:</strong> Promova uma conversa sobre o 'guia de estilo' da comunicação da equipe. Definam juntos o que é aceitável em cada canal, criando um acordo em vez de uma imposição.</li></ul>`
+                },
+                "Motivação": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>`,
+                    title: "Estratégias de Motivação e Reconhecimento",
+                    content: `<ul class="list-disc list-inside space-y-2 mt-3"><li><strong>Baby Boomers:</strong> São motivados por segurança, estabilidade e reconhecimento público de sua experiência (ex: um prêmio de 'tempo de casa', um cargo de especialista consultor).</li><li><strong>Geração X:</strong> A melhor motivação é autonomia, flexibilidade e recompensas tangíveis (bônus, dias de folga). Reconheça o resultado, mas dê a eles o espaço para trabalhar.</li><li><strong>Millennials:</strong> Motivados por propósito, desenvolvimento e oportunidades de carreira. Reconheça seu trabalho conectando-o ao impacto da empresa e oferecendo um projeto novo e desafiador.</li><li><strong>Geração Z:</strong> Buscam reconhecimento instantâneo e social. Um elogio num canal público da equipe, um voucher de iFood ou a oportunidade de trabalhar com uma nova tecnologia de ponta são motivadores poderosos.</li></ul>`
+                }
+            },
+            caseStudies: {
+                "Mentoria Reversa na TechCorp": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V7a2 2 0 012-2h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V8z" /></svg>`,
+                    content: `A TechCorp notou um gap de conhecimento digital entre seus líderes seniores e a agilidade dos novos talentos. A solução foi criar um programa de mentoria reversa, onde colaboradores da Geração Z ensinavam os executivos Baby Boomers a usar novas ferramentas de IA e redes sociais. O resultado foi um aumento na inovação e um forte sentimento de valorização mútua.`
+                },
+                "Flexibilidade com Propósito na Inova Consult": {
+                    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3" /></svg>`,
+                    content: `Para reter seus talentos Millennials, a Inova Consult implementou a "Sexta-feira de Impacto". Neste dia, a equipe podia dedicar 4 horas de trabalho a projetos sociais ou de desenvolvimento pessoal. A medida aumentou o engajamento em 30%, pois conectou o trabalho diário a um propósito maior.`
+                }
+            }
+        };
+
+        // --- Funções e Lógica da Aplicação ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const quizContainer = document.getElementById('quiz-container');
+
+        let state = {};
+
+        function resetQuizState() {
+            state = {
+                currentStep: 1,
+                currentQuestionIndex: 0,
+                quizPath: null,
+                step1Answers: [],
+                step2Answers: [],
+                advancedQuizIndex: 0
+            };
+        }
+
+        function transitionScreen(from, to, callback) {
+            if (from.id === 'start-screen') {
+                // Se a transição for da tela inicial, esconde a tela inicial e exibe o container de conteúdo
+                from.style.display = 'none';
+                const contentWrapper = document.getElementById('app-content-wrapper');
+                contentWrapper.style.display = 'block';
+                to.style.display = 'block';
+                to.classList.add('fade-in-up');
+                if (callback) callback();
+            } else {
+                // Transição normal (quiz para resultados ou restart)
+                from.classList.remove('fade-in-up');
+                from.classList.add('fade-out-down');
+                setTimeout(() => {
+                    from.style.display = 'none';
+                    from.classList.remove('fade-out-down');
+                    to.style.display = 'block';
+                    to.classList.add('fade-in-up');
+                    if (callback) callback();
+                }, 500);
+            }
+        }
+
+        function startQuiz() {
+            resetQuizState();
+            transitionScreen(startScreen, quizScreen, () => showQuestion());
+        }
+
+        function showQuestion() {
+            let questionSet;
+            let questionIndex = state.currentQuestionIndex;
+            let totalQuestions;
+            let currentQuestionNumber;
+
+            if (state.currentStep === 1) {
+                questionSet = DB.quiz.step1;
+                totalQuestions = questionSet.length;
+                currentQuestionNumber = questionIndex + 1;
+            } else {
+                questionSet = DB.quiz.step2[state.quizPath];
+                totalQuestions = DB.quiz.step1.length + questionSet.length;
+                currentQuestionNumber = DB.quiz.step1.length + questionIndex + 1;
+            }
+
+            const question = questionSet[questionIndex];
+            let optionsHTML = question.options.map(option => `<div class="quiz-option w-full text-left p-4 bg-white rounded-xl border flex items-center" data-value="${option.value}"><div class="h-8 w-8 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center mr-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><span class="text-slate-700 font-medium">${option.text}</span></div>`).join('');
+
+            const stepTitle = state.currentStep === 1 ? 'Etapa 1: Determinando Sua Orientação Primária' : 'Etapa 2: Identificando Seu Estilo Dominante';
+
+            quizContainer.innerHTML = `<div class="fade-in-up">
+            <p class="text-sky-600 font-semibold mb-2 text-center">${stepTitle}</p>
+            <p class="text-slate-500 mb-2 font-medium text-center">Pergunta ${currentQuestionNumber} de ${totalQuestions}</p>
+            <h2 class="text-xl sm:text-2xl font-semibold text-black mb-8 text-center">${question.text}</h2>
+            <div class="space-y-4 max-w-2xl mx-auto">${optionsHTML}</div>
+        </div>`;
+            document.querySelectorAll('.quiz-option').forEach(button => button.addEventListener('click', handleAnswer));
+        }
+
+        function handleAnswer(event) {
+            const selectedOption = event.currentTarget;
+            const value = selectedOption.dataset.value;
+            document.querySelectorAll('.quiz-option').forEach(opt => { opt.classList.remove('selected'); opt.style.pointerEvents = 'none'; });
+            selectedOption.classList.add('selected');
+
+            setTimeout(() => {
+                if (state.currentStep === 1) {
+                    state.step1Answers.push(value);
+                    const isLastStep1Question = state.currentQuestionIndex === DB.quiz.step1.length - 1;
+                    if (isLastStep1Question) {
+                        calculatePath();
+                        state.currentStep = 2;
+                        state.currentQuestionIndex = 0;
+                    } else {
+                        state.currentQuestionIndex++;
+                    }
+                } else { // Step 2
+                    state.step2Answers.push(value);
+                    const isLastStep2Question = state.currentQuestionIndex === DB.quiz.step2[state.quizPath].length - 1;
+                    if (isLastStep2Question) {
+                        const finalStyle = calculateFinalStyle();
+                        transitionScreen(quizScreen, resultsScreen, () => showResults(finalStyle));
+                        return;
+                    } else {
+                        state.currentQuestionIndex++;
+                    }
+                }
+
+                quizContainer.firstElementChild.classList.remove('fade-in-up');
+                quizContainer.firstElementChild.classList.add('fade-out-down');
+                setTimeout(() => {
+                    showQuestion();
+                }, 500);
+            }, 300);
+        }
+
+        function calculatePath() {
+            const aCount = state.step1Answers.filter(ans => ans === 'a').length;
+            const bCount = state.step1Answers.length - aCount;
+            if (aCount >= 4) state.quizPath = 'path1'; // Foco em Tarefas
+            else if (bCount >= 4) state.quizPath = 'path3'; // Foco em Pessoas
+            else state.quizPath = 'path2'; // Equilibrado
+        }
+
+        function calculateFinalStyle() {
+            const counts = state.step2Answers.reduce((acc, vote) => {
+                acc[vote] = (acc[vote] || 0) + 1;
+                return acc;
+            }, {});
+            const majorityAnswer = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+
+            if (state.quizPath === 'path1') return majorityAnswer === 'a' ? 'Autocrático' : 'Transacional';
+            if (state.quizPath === 'path2') return majorityAnswer === 'a' ? 'Democrático' : 'Transformacional';
+            if (state.quizPath === 'path3') {
+                if (majorityAnswer === 'a') return 'Servidor';
+                if (majorityAnswer === 'b') return 'Coaching';
+                return 'Liberal';
+            }
+        }
+
+        function showResults(styleKey) {
+            const styleData = DB.styles[styleKey];
+
+            document.getElementById('diagnosis-module').innerHTML = `
+            <div class="bg-slate-50/80 p-6 sm:p-8 rounded-xl border grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-1">
+                    <p class="text-slate-500 text-sm font-semibold">Seu Estilo Dominante</p>
+                    <p class="text-black bg-yellow-400 text-xl font-bold px-4 py-2 rounded-lg inline-block mt-2">${styleKey}</p>
+                    <p class="text-slate-500 text-sm font-semibold mt-4">Sua Orientação Primária</p>
+                    <p class="text-black font-bold">${styleData.orientation}</p>
+                </div>
+                <div class="md:col-span-2 space-y-4">
+                    <div>
+                        <h4 class="font-bold text-black">Análise do Perfil:</h4>
+                        <p class="text-slate-600 text-sm">${styleData.analysis}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-black">Caminhos de Desenvolvimento:</h4>
+                        <p class="text-slate-600 text-sm">${styleData.development}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            const playbookModule = document.getElementById('playbook-module');
+            const adviceData = DB.playbook[styleKey] || {};
+            let adviceGenerations = Object.keys(DB.generations);
+
+            let playbookTabs = adviceGenerations.map((gen, index) => `<button class="tab-btn py-2 px-3 sm:px-4 text-sm sm:text-base font-semibold ${index === 0 ? 'active' : ''}" data-tab="tab-${index}">${gen}</button>`).join('');
+            let playbookTabContents = adviceGenerations.map((gen, index) => {
+                let advice = adviceData[gen] || { synergy: 'Em breve.', friction: 'Em breve.', advice: 'Em breve.' };
+                return `<div id="tab-${index}" class="tab-content ${index > 0 ? 'hidden' : ''} space-y-4 pt-4"><div><h4 class="font-bold text-green-600">Ponto de Sinergia:</h4><p class="text-slate-600 text-sm">${advice.synergy}</p></div><div><h4 class="font-bold text-amber-600">Ponto de Fricção:</h4><p class="text-slate-600 text-sm">${advice.friction}</p></div><div><h4 class="font-bold text-yellow-600">Conselho Prático:</h4><p class="text-slate-600 text-sm">${advice.advice}</p></div></div>`;
+            }).join('');
+
+            playbookModule.innerHTML = `<div class="bg-slate-50/80 p-6 rounded-xl border"><h2 class="text-2xl font-bold text-black tracking-tight text-center mb-2">Seu Playbook de Liderança Intergeracional</h2><p class="text-slate-500 text-center mb-6 text-sm animate-pulse">Dica: Clique em cada geração abaixo para ver as estratégias.</p><div class="border-b border-slate-200 mb-4 flex justify-center flex-wrap">${playbookTabs}</div><div>${playbookTabContents}</div></div>`;
+
+            const integrationModule = document.getElementById('integration-plan-module');
+            integrationModule.innerHTML = `
+            <h3 class="font-bold text-xl text-black mb-4">Analisador de Integração de Equipe</h3>
+            <p class="text-slate-600 mb-4 text-sm">Insira a composição da sua equipe e a geração do novo membro para receber dicas de integração personalizadas.</p>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="boomers-count" class="block text-sm font-medium text-black">Baby Boomers</label>
+                    <input type="number" id="boomers-count" value="0" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="genx-count" class="block text-sm font-medium text-black">Geração X</label>
+                    <input type="number" id="genx-count" value="0" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="millennials-count" class="block text-sm font-medium text-black">Millennials</label>
+                    <input type="number" id="millennials-count" value="0" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="genz-count" class="block text-sm font-medium text-black">Geração Z</label>
+                    <input type="number" id="genz-count" value="0" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label for="new-hire-gen" class="block text-sm font-medium text-black">Geração do Novo Integrado</label>
+                <select id="new-hire-gen" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm">
+                    <option>Baby Boomer</option>
+                    <option>Geração X</option>
+                    <option>Millennial</option>
+                    <option>Geração Z</option>
+                </select>
+            </div>
+            <button id="generate-tips-btn" class="w-full navigation-btn font-bold py-2 px-6 rounded-full hover:bg-yellow-600 cursor-pointer transition-transform transform hover:scale-105">Gerar Dicas de Integração</button>
+            <div id="integration-tips-output" class="mt-4 text-sm space-y-3"></div>
+        `;
+
+
+            document.getElementById('deep-dive-module').innerHTML = `<h2 class="text-2xl font-bold text-black tracking-tight text-center mb-6">Aprofunde seu Conhecimento</h2><div class="space-y-2">${Object.values(DB.deepDiveContent).map(data => `<div class="accordion-item border rounded-lg bg-white"><button class="accordion-header w-full flex items-center text-left p-4 hover:bg-slate-50 rounded-lg">${data.icon}<span class="font-semibold text-black flex-1">${data.title}</span><svg class="w-5 h-5 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content pb-4 px-4 text-slate-500 text-sm"><div class="border-t pt-3">${data.content}</div></div></div>`).join('')}</div>`;
+
+            document.getElementById('case-studies-module').innerHTML = `<h3 class="font-bold text-xl text-black mb-4">Estudos de Caso</h3><div class="space-y-2">${Object.entries(DB.caseStudies).map(([title, data]) => `<div class="accordion-item border rounded-lg bg-white"><button class="accordion-header w-full flex items-center text-left p-4 hover:bg-slate-50 rounded-lg">${data.icon}<span class="font-semibold text-black flex-1">${title}</span><svg class="w-5 h-5 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content pb-4 px-4 text-slate-500 text-sm"><div class="border-t pt-3">${data.content}</div></div></div>`).join('')}</div>`;
+
+            document.getElementById('toolkit-module').innerHTML = `
+            <h3 class="font-bold text-xl text-black mb-4">Caixa de Ferramentas</h3>
+            <div class="space-y-2">
+                <div class="accordion-item border rounded-lg bg-white"><button class="accordion-header w-full flex items-center text-left p-4 hover:bg-slate-50 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span class="font-semibold text-black flex-1">Checklist de Onboarding</span><svg class="w-5 h-5 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content pb-4 px-4 text-slate-500 text-sm"><div class="border-t pt-3 space-y-2"><a href="checklist-onboarding-boomers.pdf" download class="block text-yellow-600 hover:underline">Download para Baby Boomers</a><a href="checklist-onboarding-genx.pdf" download class="block text-yellow-600 hover:underline">Download para Geração X</a><a href="checklist-onboarding-millennials.pdf" download class="block text-yellow-600 hover:underline">Download para Millennials</a><a href="checklist-onboarding-genz.pdf" download class="block text-yellow-600 hover:underline">Download para Geração Z</a></div></div></div>
+                <div class="accordion-item border rounded-lg bg-white"><button class="accordion-header w-full flex items-center text-left p-4 hover:bg-slate-50 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span class="font-semibold text-black flex-1">Roteiro para Reunião 1-on-1</span><svg class="w-5 h-5 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content pb-4 px-4 text-slate-500 text-sm"><div class="border-t pt-3 space-y-2"><a href="roteiro-1-on-1-boomers.pdf" download class="block text-yellow-600 hover:underline">Download para Baby Boomers</a><a href="roteiro-1-on-1-genx.pdf" download class="block text-yellow-600 hover:underline">Download para Geração X</a><a href="roteiro-1-on-1-millennials.pdf" download class="block text-yellow-600 hover:underline">Download para Millennials</a><a href="roteiro-1-on-1-genz.pdf" download class="block text-yellow-600 hover:underline">Download para Geração Z</a></div></div></div>
+            </div>
+        `;
+
+            renderAdvancedQuiz(styleKey);
+            addInteractiveListeners(styleKey);
+            setupUserTrack();
+        }
+
+        function renderAdvancedQuiz(styleKey) {
+            const quizData = DB.advancedQuiz[styleKey];
+            const scenarioModule = document.getElementById('scenario-module');
+            let currentQuestionIndex = state.advancedQuizIndex || 0;
+
+            if (!quizData || currentQuestionIndex >= quizData.length) {
+                scenarioModule.innerHTML = `<h3 class="font-bold text-xl text-black mb-4">Quiz Avançado de Liderança</h3><p class="p-4 bg-green-100 text-green-800 rounded-lg">Parabéns, você completou todos os cenários de treinamento para o seu perfil!</p>`;
+                return;
+            }
+
+            const scenario = quizData[currentQuestionIndex];
+            scenarioModule.innerHTML = `
+            <h3 class="font-bold text-xl text-black mb-4">Quiz Avançado de Liderança</h3>
+            <p class="text-slate-500 mb-2 font-medium">Cenário ${currentQuestionIndex + 1} de ${quizData.length}</p>
+            <p class="text-slate-600 mb-6">${scenario.title}</p>
+            <div id="scenario-options" class="space-y-3">
+                ${scenario.options.map(opt => `<div class="scenario-option w-full text-left p-4 bg-white rounded-lg border" data-value="${opt.value}"><span class="text-slate-700 font-medium">${opt.text}</span></div>`).join('')}
+            </div>
+            <div id="scenario-feedback" class="feedback-card"></div>
+            <div class="text-right">
+                 <button id="next-scenario-btn" class="hidden navigation-btn font-bold py-2 px-4 rounded-full transition-transform transform hover:scale-105">Próximo Cenário</button>
+            </div>
+        `;
+
+            scenarioModule.querySelectorAll('.scenario-option').forEach(button => {
+                button.addEventListener('click', () => {
+                    const selectedValue = button.dataset.value;
+                    const isCorrect = selectedValue === scenario.correct;
+                    const feedbackText = scenario.feedback[selectedValue];
+
+                    scenarioModule.querySelectorAll('.scenario-option').forEach(opt => {
+                        opt.style.pointerEvents = 'none';
+                        if (opt.dataset.value === scenario.correct) {
+                            opt.classList.add('correct');
+                        } else if (opt.dataset.value === selectedValue) {
+                            opt.classList.add('incorrect');
+                        }
+                    });
+
+                    const feedbackEl = scenarioModule.querySelector('#scenario-feedback');
+                    feedbackEl.innerHTML = `<div class="p-4 rounded-lg text-sm ${isCorrect ? 'bg-green-50 border-l-4 border-green-400 text-green-800' : 'bg-amber-50 border-l-4 border-amber-400 text-amber-800'}"><strong>${isCorrect ? 'Análise:' : 'Feedback:'}</strong> ${feedbackText}</div>`;
+                    feedbackEl.classList.add('visible');
+
+                    scenarioModule.querySelector('#next-scenario-btn').classList.remove('hidden');
+                });
+            });
+
+            scenarioModule.querySelector('#next-scenario-btn')?.addEventListener('click', () => {
+                state.advancedQuizIndex = (state.advancedQuizIndex || 0) + 1;
+                renderAdvancedQuiz(styleKey);
+            });
+        }
+
+        function addInteractiveListeners(userStyle) {
+            // Abas do Playbook
+            document.querySelectorAll('.tab-btn').forEach(button => { button.addEventListener('click', (e) => { const tabId = e.currentTarget.dataset.tab; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); e.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(content => { content.id === tabId ? content.classList.remove('hidden') : content.classList.add('hidden'); }); }); });
+
+            // Analisador de Integração
+            document.getElementById('generate-tips-btn').addEventListener('click', () => {
+                const counts = {
+                    "Baby Boomer": parseInt(document.getElementById('boomers-count').value) || 0,
+                    "Geração X": parseInt(document.getElementById('genx-count').value) || 0,
+                    "Millennial": parseInt(document.getElementById('millennials-count').value) || 0,
+                    "Geração Z": parseInt(document.getElementById('genz-count').value) || 0,
+                };
+                const newHireGen = document.getElementById('new-hire-gen').value;
+                const outputEl = document.getElementById('integration-tips-output');
+
+                const scores = {
+                    "Estrutura e Formalidade": counts["Baby Boomer"] * 2,
+                    "Autonomia e Pragmatismo": counts["Geração X"] * 2,
+                    "Colaboração e Propósito": counts["Millennial"] * 2,
+                    "Digital e Autenticidade": counts["Geração Z"] * 2,
+                };
+
+                let dominantEnvironment = "Colaboração e Propósito"; // Default
+                let maxScore = -1;
+                for (const [env, score] of Object.entries(scores)) {
+                    if (score > maxScore) {
+                        maxScore = score;
+                        dominantEnvironment = env;
+                    }
+                }
+                if (maxScore <= 0) { // Se a equipa estiver vazia, define um padrão.
+                    dominantEnvironment = "Colaboração e Propósito";
+                }
+
+                let tips = DB.integrationTips[dominantEnvironment]?.[newHireGen] || "Dicas não encontradas para esta combinação.";
+                let adjustmentNotes = [];
+
+                const checkSuggestion = (tipString) => {
+                    const generationMap = { "Baby Boomer": counts["Baby Boomer"], "Geração X": counts["Geração X"], "Millennial": counts["Millennial"], "Geração Z": counts["Geração Z"] };
+                    const regex = /(Par Ideal|Mentor Secundário|Mentoria Reversa):.*? (Baby Boomer|Geração X|Millennial|Geração Z)/g;
+                    let match;
+                    while ((match = regex.exec(tipString)) !== null) {
+                        const suggestionType = match[1];
+                        const suggestedGen = match[2];
+                        if (generationMap[suggestedGen] === 0) {
+                            // Procura por gerações alternativas disponíveis na equipa
+                            const availableGens = Object.keys(counts).filter(gen => counts[gen] > 0 && gen !== newHireGen);
+                            if (availableGens.length > 0) {
+                                availableGens.sort((a, b) => counts[b] - counts[a]); // Ordena pela mais populosa
+                                const alternative = availableGens[0];
+                                adjustmentNotes.push(`<strong>Ajuste de Dica:</strong> A sugestão de um <em>${suggestedGen}</em> como "${suggestionType}" não é viável. Considere usar um <strong>${alternative}</strong> como alternativa, pois é a geração mais presente na equipa.`);
+                            } else {
+                                adjustmentNotes.push(`<strong>Ajuste de Dica:</strong> A sugestão de um <em>${suggestedGen}</em> como "${suggestionType}" não é viável e não há outras gerações disponíveis. O líder deve assumir este papel de mentoria diretamente.`);
+                            }
+                        }
+                    }
+                };
+
+                checkSuggestion(tips);
+
+                // Formatar a saída
+                const formattedTips = tips.split('. ').map(tip => {
+                    const parts = tip.split(': ');
+                    if (parts.length > 1) {
+                        return `<p><strong class="text-black">${parts[0]}:</strong> ${parts.slice(1).join(': ')}</p>`;
+                    }
+                    return tip ? `<p>${tip}.</p>` : '';
+                }).join('');
+
+                let notesHTML = '';
+                if (adjustmentNotes.length > 0) {
+                    notesHTML = `<div class="mt-3 p-3 bg-amber-50 border-l-4 border-amber-400 text-amber-800 rounded-r-lg">
+                    ${adjustmentNotes.map(note => `<p class="text-xs">${note}</p>`).join('')}
+                </div>`;
+                }
+
+                outputEl.innerHTML = `
+                <div class="p-4 bg-slate-50 rounded-lg border">
+                    <h5 class="font-bold text-black mb-2">Ambiente Dominante da Equipe: <span class="text-yellow-600">${dominantEnvironment}</span></h5>
+                    <div class="space-y-2 text-slate-600">${formattedTips}</div>
+                    ${notesHTML}
+                </div>`;
+            });
+
+            // Acordeões internos (biblioteca, etc.)
+            document.querySelectorAll('.accordion-item .accordion-header').forEach(header => { header.addEventListener('click', (e) => { const content = e.currentTarget.nextElementSibling; const icon = e.currentTarget.querySelector('svg:last-child'); if (icon) icon.classList.toggle('rotate-180'); content.classList.toggle('open'); }); });
+        }
+
+        function setupUserTrack() {
+            const steps = document.querySelectorAll('.track-step');
+
+            const updateStepAppearance = (stepEl, state) => {
+                const numberEl = stepEl.querySelector('.track-step-number');
+                const statusEl = stepEl.querySelector('.track-step-status');
+                const headerEl = stepEl.querySelector('.main-accordion-header');
+
+                headerEl.classList.remove('is-active', 'is-completed', 'is-locked');
+                numberEl.classList.remove('bg-yellow-500', 'bg-green-500', 'bg-slate-300', 'bg-black');
+                numberEl.style.backgroundColor = 'var(--renault-black)'; // Cor inicial
+
+                switch (state) {
+                    case 'completed':
+                        headerEl.classList.add('is-completed');
+                        numberEl.style.backgroundColor = '#22C55E'; /* Verde para concluído */
+                        statusEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+                        break;
+                    case 'active':
+                        headerEl.classList.add('is-active');
+                        numberEl.style.backgroundColor = 'var(--renault-yellow)'; /* Amarelo para ativo */
+                        numberEl.style.color = 'var(--renault-black)';
+                        statusEl.querySelector('svg')?.classList.add('rotate-180');
+                        break;
+                    case 'locked':
+                        headerEl.classList.add('is-locked');
+                        const parentStep = headerEl.closest('.track-step');
+                        if (parentStep) parentStep.classList.add('opacity-60');
+                        numberEl.style.backgroundColor = '#CBD5E1'; /* Cinza para bloqueado */
+                        numberEl.style.color = 'var(--renault-black)';
+                        statusEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>`;
+                        break;
+                }
+            };
+
+            const advanceTrack = (fromStep) => {
+                const currentStepEl = document.querySelector(`.track-step[data-step="${fromStep}"]`);
+                const nextStepEl = document.querySelector(`.track-step[data-step="${fromStep + 1}"]`);
+
+                // Complete current step
+                updateStepAppearance(currentStepEl, 'completed');
+                currentStepEl.querySelector('.accordion-content').classList.remove('open');
+                currentStepEl.querySelector('.track-step-status svg')?.classList.remove('rotate-180');
+
+                if (nextStepEl) {
+                    // Activate next step
+                    nextStepEl.classList.remove('opacity-60');
+                    updateStepAppearance(nextStepEl, 'active');
+                    nextStepEl.querySelector('.accordion-content').classList.add('open');
+                }
+            };
+
+            // Initial setup
+            steps.forEach((step, index) => {
+                const content = step.querySelector('.accordion-content');
+                const header = step.querySelector('.main-accordion-header');
+                const nextBtn = step.querySelector('.next-step-btn');
+
+                if (index === 0) { // First step
+                    updateStepAppearance(step, 'active');
+                    content.classList.add('open');
+                } else {
+                    updateStepAppearance(step, 'locked');
+                }
+
+                header.addEventListener('click', () => {
+                    if (!header.classList.contains('is-locked')) {
+                        const icon = header.querySelector('.track-step-status svg');
+                        if (icon) icon.classList.toggle('rotate-180');
+                        content.classList.toggle('open');
+                    }
+                });
+
+                nextBtn?.addEventListener('click', (e) => {
+                    const currentStepNum = parseInt(e.currentTarget.parentElement.closest('.track-step').dataset.step);
+                    advanceTrack(currentStepNum);
+                });
+            });
+        }
+
+        startBtn.addEventListener('click', () => {
+            startQuiz();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            transitionScreen(resultsScreen, startScreen);
+            document.getElementById('app-content-wrapper').style.display = 'none';
+        });
+
+        // Inicialização
+        resetQuizState();
+    </script>
+</body>
+</html>
